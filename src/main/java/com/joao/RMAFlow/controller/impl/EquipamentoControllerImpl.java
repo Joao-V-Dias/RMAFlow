@@ -20,6 +20,11 @@ import com.joao.RMAFlow.service.EquipamentoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * TODO (RMAFLOW_AUTH): quando a logica de negocio for alem do CRUD basico, restringir por perfil:
+ * cadastrar entrada / registrar destino obsoleto / disponibilizar equipamento -> ADMIN, ESTOQUE.
+ * Consulta (listar/buscarPorId) -> qualquer usuario autenticado (sem restricao adicional).
+ */
 @RestController
 @RequestMapping("/api/equipamentos")
 @RequiredArgsConstructor

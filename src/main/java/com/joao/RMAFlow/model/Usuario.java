@@ -53,4 +53,8 @@ public class Usuario {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PerfilUsuario perfil;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean ativo = true;
 }

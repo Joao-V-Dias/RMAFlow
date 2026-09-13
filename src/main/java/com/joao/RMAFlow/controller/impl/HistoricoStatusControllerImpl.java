@@ -20,6 +20,11 @@ import com.joao.RMAFlow.service.HistoricoStatusService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * TODO (RMAFLOW_AUTH): trilha de auditoria gerada automaticamente por EquipamentoService.
+ * alterarStatus(); os endpoints de escrita aqui sao apenas stub e devem ser revistos (ou
+ * removidos) quando essa regra for finalizada. Consulta liberada a qualquer autenticado.
+ */
 @RestController
 @RequestMapping("/api/historico-status")
 @RequiredArgsConstructor

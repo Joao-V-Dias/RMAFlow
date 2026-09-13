@@ -20,6 +20,10 @@ import com.joao.RMAFlow.service.TesteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * TODO (RMAFLOW_AUTH): quando a logica de negocio for alem do CRUD basico, restringir
+ * o registro de teste (criar/atualizar) ao perfil ADMIN, RMA.
+ */
 @RestController
 @RequestMapping("/api/testes")
 @RequiredArgsConstructor

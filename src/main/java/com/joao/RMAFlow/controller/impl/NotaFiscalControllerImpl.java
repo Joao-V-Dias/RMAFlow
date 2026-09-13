@@ -20,6 +20,10 @@ import com.joao.RMAFlow.service.NotaFiscalService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * TODO (RMAFLOW_AUTH): quando a logica de negocio for alem do CRUD basico, restringir
+ * a solicitacao/emissao de nota fiscal (criar/atualizar) ao perfil ADMIN, FINANCEIRO.
+ */
 @RestController
 @RequestMapping("/api/notas-fiscais")
 @RequiredArgsConstructor

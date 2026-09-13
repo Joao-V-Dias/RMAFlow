@@ -17,4 +17,9 @@ public interface UsuarioService {
     Usuario atualizar(Long id, Usuario usuario);
 
     void excluir(Long id);
+
+    /**
+     * Inativa o usuario (bloqueia login) em vez de exclui-lo do banco. Restrito ao perfil ADMIN.
+     */
+    Usuario inativar(Long id);
 }

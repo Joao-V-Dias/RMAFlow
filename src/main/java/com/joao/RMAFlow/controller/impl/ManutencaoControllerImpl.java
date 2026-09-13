@@ -20,6 +20,10 @@ import com.joao.RMAFlow.service.ManutencaoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * TODO (RMAFLOW_AUTH): quando a logica de negocio for alem do CRUD basico, restringir
+ * o encaminhamento para manutencao (criar/atualizar) ao perfil ADMIN, RMA.
+ */
 @RestController
 @RequestMapping("/api/manutencoes")
 @RequiredArgsConstructor

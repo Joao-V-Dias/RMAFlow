@@ -17,4 +17,6 @@ public interface UsuarioController {
     ResponseEntity<Usuario> atualizar(Long id, Usuario usuario);
 
     ResponseEntity<Void> excluir(Long id);
+
+    ResponseEntity<Usuario> inativar(Long id);
 }

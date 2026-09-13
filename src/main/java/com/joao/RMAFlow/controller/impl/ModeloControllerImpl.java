@@ -20,6 +20,11 @@ import com.joao.RMAFlow.service.ModeloService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * TODO (RMAFLOW_AUTH): a tabela de perfis do RMAFLOW_AUTH.md nao define restricao especifica
+ * para o cadastro de Modelo; por ora, consulta e escrita ficam liberadas a qualquer usuario
+ * autenticado, revisar quando a regra de negocio correspondente for definida.
+ */
 @RestController
 @RequestMapping("/api/modelos")
 @RequiredArgsConstructor
