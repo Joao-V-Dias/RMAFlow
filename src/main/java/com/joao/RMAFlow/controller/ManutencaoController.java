@@ -4,17 +4,18 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.joao.RMAFlow.model.Manutencao;
+import com.joao.RMAFlow.dto.request.ManutencaoRequestDTO;
+import com.joao.RMAFlow.dto.response.ManutencaoResponseDTO;
 
 public interface ManutencaoController {
 
-    ResponseEntity<List<Manutencao>> listar();
+    ResponseEntity<List<ManutencaoResponseDTO>> listar();
 
-    ResponseEntity<Manutencao> buscarPorId(Long id);
+    ResponseEntity<ManutencaoResponseDTO> buscarPorId(Long id);
 
-    ResponseEntity<Manutencao> criar(Manutencao manutencao);
+    ResponseEntity<ManutencaoResponseDTO> criar(ManutencaoRequestDTO dto);
 
-    ResponseEntity<Manutencao> atualizar(Long id, Manutencao manutencao);
+    ResponseEntity<ManutencaoResponseDTO> atualizar(Long id, ManutencaoRequestDTO dto);
 
     ResponseEntity<Void> excluir(Long id);
 }

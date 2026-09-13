@@ -4,17 +4,18 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.joao.RMAFlow.model.Parceiro;
+import com.joao.RMAFlow.dto.request.ParceiroRequestDTO;
+import com.joao.RMAFlow.dto.response.ParceiroResponseDTO;
 
 public interface ParceiroController {
 
-    ResponseEntity<List<Parceiro>> listar();
+    ResponseEntity<List<ParceiroResponseDTO>> listar();
 
-    ResponseEntity<Parceiro> buscarPorId(Long id);
+    ResponseEntity<ParceiroResponseDTO> buscarPorId(Long id);
 
-    ResponseEntity<Parceiro> criar(Parceiro parceiro);
+    ResponseEntity<ParceiroResponseDTO> criar(ParceiroRequestDTO dto);
 
-    ResponseEntity<Parceiro> atualizar(Long id, Parceiro parceiro);
+    ResponseEntity<ParceiroResponseDTO> atualizar(Long id, ParceiroRequestDTO dto);
 
     ResponseEntity<Void> excluir(Long id);
 }

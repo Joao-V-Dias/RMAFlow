@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.joao.RMAFlow.controller.ParceiroController;
+import com.joao.RMAFlow.dto.request.ParceiroRequestDTO;
+import com.joao.RMAFlow.dto.response.ParceiroResponseDTO;
+import com.joao.RMAFlow.mapper.ParceiroMapper;
 import com.joao.RMAFlow.model.Parceiro;
 import com.joao.RMAFlow.service.ParceiroService;
 
@@ -34,26 +37,31 @@ public class ParceiroControllerImpl implements ParceiroController {
 
     @Override
     @GetMapping
-    public ResponseEntity<List<Parceiro>> listar() {
-        return ResponseEntity.ok(parceiroService.listarTodos());
+    public ResponseEntity<List<ParceiroResponseDTO>> listar() {
+        List<ParceiroResponseDTO> parceiros = parceiroService.listarTodos().stream()
+                .map(ParceiroMapper::toResponseDTO)
+                .toList();
+        return ResponseEntity.ok(parceiros);
     }
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<Parceiro> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(parceiroService.buscarPorId(id));
+    public ResponseEntity<ParceiroResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(ParceiroMapper.toResponseDTO(parceiroService.buscarPorId(id)));
     }
 
     @Override
     @PostMapping
-    public ResponseEntity<Parceiro> criar(@Valid @RequestBody Parceiro parceiro) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(parceiroService.salvar(parceiro));
+    public ResponseEntity<ParceiroResponseDTO> criar(@Valid @RequestBody ParceiroRequestDTO dto) {
+        Parceiro salvo = parceiroService.salvar(ParceiroMapper.toEntity(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ParceiroMapper.toResponseDTO(salvo));
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<Parceiro> atualizar(@PathVariable Long id, @Valid @RequestBody Parceiro parceiro) {
-        return ResponseEntity.ok(parceiroService.atualizar(id, parceiro));
+    public ResponseEntity<ParceiroResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody ParceiroRequestDTO dto) {
+        Parceiro atualizado = parceiroService.atualizar(id, ParceiroMapper.toEntity(dto));
+        return ResponseEntity.ok(ParceiroMapper.toResponseDTO(atualizado));
     }
 
     @Override

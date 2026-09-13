@@ -14,7 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.joao.RMAFlow.controller.ManutencaoController;
+import com.joao.RMAFlow.dto.request.ManutencaoRequestDTO;
+import com.joao.RMAFlow.dto.response.ManutencaoResponseDTO;
+import com.joao.RMAFlow.mapper.ManutencaoMapper;
+import com.joao.RMAFlow.model.Equipamento;
 import com.joao.RMAFlow.model.Manutencao;
+import com.joao.RMAFlow.service.EquipamentoService;
 import com.joao.RMAFlow.service.ManutencaoService;
 
 import jakarta.validation.Valid;
@@ -30,29 +35,37 @@ import lombok.RequiredArgsConstructor;
 public class ManutencaoControllerImpl implements ManutencaoController {
 
     private final ManutencaoService manutencaoService;
+    private final EquipamentoService equipamentoService;
 
     @Override
     @GetMapping
-    public ResponseEntity<List<Manutencao>> listar() {
-        return ResponseEntity.ok(manutencaoService.listarTodos());
+    public ResponseEntity<List<ManutencaoResponseDTO>> listar() {
+        List<ManutencaoResponseDTO> manutencoes = manutencaoService.listarTodos().stream()
+                .map(ManutencaoMapper::toResponseDTO)
+                .toList();
+        return ResponseEntity.ok(manutencoes);
     }
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<Manutencao> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(manutencaoService.buscarPorId(id));
+    public ResponseEntity<ManutencaoResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(ManutencaoMapper.toResponseDTO(manutencaoService.buscarPorId(id)));
     }
 
     @Override
     @PostMapping
-    public ResponseEntity<Manutencao> criar(@Valid @RequestBody Manutencao manutencao) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(manutencaoService.salvar(manutencao));
+    public ResponseEntity<ManutencaoResponseDTO> criar(@Valid @RequestBody ManutencaoRequestDTO dto) {
+        Equipamento equipamento = equipamentoService.buscarPorId(dto.equipamentoId());
+        Manutencao salvo = manutencaoService.salvar(ManutencaoMapper.toEntity(dto, equipamento));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ManutencaoMapper.toResponseDTO(salvo));
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<Manutencao> atualizar(@PathVariable Long id, @Valid @RequestBody Manutencao manutencao) {
-        return ResponseEntity.ok(manutencaoService.atualizar(id, manutencao));
+    public ResponseEntity<ManutencaoResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody ManutencaoRequestDTO dto) {
+        Equipamento equipamento = equipamentoService.buscarPorId(dto.equipamentoId());
+        Manutencao atualizado = manutencaoService.atualizar(id, ManutencaoMapper.toEntity(dto, equipamento));
+        return ResponseEntity.ok(ManutencaoMapper.toResponseDTO(atualizado));
     }
 
     @Override

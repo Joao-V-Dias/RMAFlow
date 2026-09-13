@@ -14,8 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.joao.RMAFlow.controller.NotaFiscalController;
+import com.joao.RMAFlow.dto.request.NotaFiscalRequestDTO;
+import com.joao.RMAFlow.dto.response.NotaFiscalResponseDTO;
+import com.joao.RMAFlow.mapper.NotaFiscalMapper;
+import com.joao.RMAFlow.model.Equipamento;
 import com.joao.RMAFlow.model.NotaFiscal;
+import com.joao.RMAFlow.model.Parceiro;
+import com.joao.RMAFlow.service.EquipamentoService;
 import com.joao.RMAFlow.service.NotaFiscalService;
+import com.joao.RMAFlow.service.ParceiroService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,29 +37,48 @@ import lombok.RequiredArgsConstructor;
 public class NotaFiscalControllerImpl implements NotaFiscalController {
 
     private final NotaFiscalService notaFiscalService;
+    private final EquipamentoService equipamentoService;
+    private final ParceiroService parceiroService;
 
     @Override
     @GetMapping
-    public ResponseEntity<List<NotaFiscal>> listar() {
-        return ResponseEntity.ok(notaFiscalService.listarTodos());
+    public ResponseEntity<List<NotaFiscalResponseDTO>> listar() {
+        List<NotaFiscalResponseDTO> notasFiscais = notaFiscalService.listarTodos().stream()
+                .map(NotaFiscalMapper::toResponseDTO)
+                .toList();
+        return ResponseEntity.ok(notasFiscais);
     }
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<NotaFiscal> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(notaFiscalService.buscarPorId(id));
+    public ResponseEntity<NotaFiscalResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(NotaFiscalMapper.toResponseDTO(notaFiscalService.buscarPorId(id)));
     }
 
     @Override
     @PostMapping
-    public ResponseEntity<NotaFiscal> criar(@Valid @RequestBody NotaFiscal notaFiscal) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(notaFiscalService.salvar(notaFiscal));
+    public ResponseEntity<NotaFiscalResponseDTO> criar(@Valid @RequestBody NotaFiscalRequestDTO dto) {
+        Equipamento equipamento = equipamentoService.buscarPorId(dto.equipamentoId());
+        Parceiro parceiro = parceiroService.buscarPorId(dto.parceiroId());
+        NotaFiscal salvo = notaFiscalService.salvar(NotaFiscalMapper.toEntity(dto, equipamento, parceiro));
+        return ResponseEntity.status(HttpStatus.CREATED).body(NotaFiscalMapper.toResponseDTO(salvo));
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<NotaFiscal> atualizar(@PathVariable Long id, @Valid @RequestBody NotaFiscal notaFiscal) {
-        return ResponseEntity.ok(notaFiscalService.atualizar(id, notaFiscal));
+    public ResponseEntity<NotaFiscalResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody NotaFiscalRequestDTO dto) {
+        // dataEmissao/status nao fazem parte do request (geridos pelo fluxo de emissao) - preserva
+        // os valores atuais para nao serem sobrescritos pelo default da entidade recem-montada.
+        NotaFiscal existente = notaFiscalService.buscarPorId(id);
+        Equipamento equipamento = equipamentoService.buscarPorId(dto.equipamentoId());
+        Parceiro parceiro = parceiroService.buscarPorId(dto.parceiroId());
+
+        NotaFiscal notaFiscal = NotaFiscalMapper.toEntity(dto, equipamento, parceiro);
+        notaFiscal.setDataEmissao(existente.getDataEmissao());
+        notaFiscal.setStatus(existente.getStatus());
+
+        NotaFiscal atualizado = notaFiscalService.atualizar(id, notaFiscal);
+        return ResponseEntity.ok(NotaFiscalMapper.toResponseDTO(atualizado));
     }
 
     @Override

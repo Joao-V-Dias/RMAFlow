@@ -4,17 +4,18 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.joao.RMAFlow.model.Equipamento;
+import com.joao.RMAFlow.dto.request.EquipamentoRequestDTO;
+import com.joao.RMAFlow.dto.response.EquipamentoResponseDTO;
 
 public interface EquipamentoController {
 
-    ResponseEntity<List<Equipamento>> listar();
+    ResponseEntity<List<EquipamentoResponseDTO>> listar();
 
-    ResponseEntity<Equipamento> buscarPorId(Long id);
+    ResponseEntity<EquipamentoResponseDTO> buscarPorId(Long id);
 
-    ResponseEntity<Equipamento> criar(Equipamento equipamento);
+    ResponseEntity<EquipamentoResponseDTO> criar(EquipamentoRequestDTO dto);
 
-    ResponseEntity<Equipamento> atualizar(Long id, Equipamento equipamento);
+    ResponseEntity<EquipamentoResponseDTO> atualizar(Long id, EquipamentoRequestDTO dto);
 
     ResponseEntity<Void> excluir(Long id);
 }

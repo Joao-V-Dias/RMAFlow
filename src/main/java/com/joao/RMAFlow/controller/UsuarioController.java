@@ -4,19 +4,20 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.joao.RMAFlow.model.Usuario;
+import com.joao.RMAFlow.dto.request.UsuarioRequestDTO;
+import com.joao.RMAFlow.dto.response.UsuarioResponseDTO;
 
 public interface UsuarioController {
 
-    ResponseEntity<List<Usuario>> listar();
+    ResponseEntity<List<UsuarioResponseDTO>> listar();
 
-    ResponseEntity<Usuario> buscarPorId(Long id);
+    ResponseEntity<UsuarioResponseDTO> buscarPorId(Long id);
 
-    ResponseEntity<Usuario> criar(Usuario usuario);
+    ResponseEntity<UsuarioResponseDTO> criar(UsuarioRequestDTO dto);
 
-    ResponseEntity<Usuario> atualizar(Long id, Usuario usuario);
+    ResponseEntity<UsuarioResponseDTO> atualizar(Long id, UsuarioRequestDTO dto);
 
     ResponseEntity<Void> excluir(Long id);
 
-    ResponseEntity<Usuario> inativar(Long id);
+    ResponseEntity<UsuarioResponseDTO> inativar(Long id);
 }

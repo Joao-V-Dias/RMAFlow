@@ -4,17 +4,13 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.joao.RMAFlow.model.HistoricoStatus;
+import com.joao.RMAFlow.dto.response.HistoricoStatusResponseDTO;
 
 public interface HistoricoStatusController {
 
-    ResponseEntity<List<HistoricoStatus>> listar();
+    ResponseEntity<List<HistoricoStatusResponseDTO>> listar();
 
-    ResponseEntity<HistoricoStatus> buscarPorId(Long id);
-
-    ResponseEntity<HistoricoStatus> criar(HistoricoStatus historicoStatus);
-
-    ResponseEntity<HistoricoStatus> atualizar(Long id, HistoricoStatus historicoStatus);
+    ResponseEntity<HistoricoStatusResponseDTO> buscarPorId(Long id);
 
     ResponseEntity<Void> excluir(Long id);
 }

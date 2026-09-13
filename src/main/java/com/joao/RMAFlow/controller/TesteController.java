@@ -4,17 +4,18 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.joao.RMAFlow.model.Teste;
+import com.joao.RMAFlow.dto.request.TesteRequestDTO;
+import com.joao.RMAFlow.dto.response.TesteResponseDTO;
 
 public interface TesteController {
 
-    ResponseEntity<List<Teste>> listar();
+    ResponseEntity<List<TesteResponseDTO>> listar();
 
-    ResponseEntity<Teste> buscarPorId(Long id);
+    ResponseEntity<TesteResponseDTO> buscarPorId(Long id);
 
-    ResponseEntity<Teste> criar(Teste teste);
+    ResponseEntity<TesteResponseDTO> criar(TesteRequestDTO dto);
 
-    ResponseEntity<Teste> atualizar(Long id, Teste teste);
+    ResponseEntity<TesteResponseDTO> atualizar(Long id, TesteRequestDTO dto);
 
     ResponseEntity<Void> excluir(Long id);
 }

@@ -14,8 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.joao.RMAFlow.controller.EquipamentoController;
+import com.joao.RMAFlow.dto.request.EquipamentoRequestDTO;
+import com.joao.RMAFlow.dto.response.EquipamentoResponseDTO;
+import com.joao.RMAFlow.mapper.EquipamentoMapper;
 import com.joao.RMAFlow.model.Equipamento;
+import com.joao.RMAFlow.model.Modelo;
+import com.joao.RMAFlow.model.Parceiro;
 import com.joao.RMAFlow.service.EquipamentoService;
+import com.joao.RMAFlow.service.ModeloService;
+import com.joao.RMAFlow.service.ParceiroService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,29 +38,49 @@ import lombok.RequiredArgsConstructor;
 public class EquipamentoControllerImpl implements EquipamentoController {
 
     private final EquipamentoService equipamentoService;
+    private final ModeloService modeloService;
+    private final ParceiroService parceiroService;
 
     @Override
     @GetMapping
-    public ResponseEntity<List<Equipamento>> listar() {
-        return ResponseEntity.ok(equipamentoService.listarTodos());
+    public ResponseEntity<List<EquipamentoResponseDTO>> listar() {
+        List<EquipamentoResponseDTO> equipamentos = equipamentoService.listarTodos().stream()
+                .map(EquipamentoMapper::toResponseDTO)
+                .toList();
+        return ResponseEntity.ok(equipamentos);
     }
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<Equipamento> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(equipamentoService.buscarPorId(id));
+    public ResponseEntity<EquipamentoResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(EquipamentoMapper.toResponseDTO(equipamentoService.buscarPorId(id)));
     }
 
     @Override
     @PostMapping
-    public ResponseEntity<Equipamento> criar(@Valid @RequestBody Equipamento equipamento) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(equipamentoService.salvar(equipamento));
+    public ResponseEntity<EquipamentoResponseDTO> criar(@Valid @RequestBody EquipamentoRequestDTO dto) {
+        Modelo modelo = modeloService.buscarPorId(dto.modeloId());
+        Parceiro parceiro = parceiroService.buscarPorId(dto.parceiroId());
+        Equipamento salvo = equipamentoService.salvar(EquipamentoMapper.toEntity(dto, modelo, parceiro));
+        return ResponseEntity.status(HttpStatus.CREATED).body(EquipamentoMapper.toResponseDTO(salvo));
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<Equipamento> atualizar(@PathVariable Long id, @Valid @RequestBody Equipamento equipamento) {
-        return ResponseEntity.ok(equipamentoService.atualizar(id, equipamento));
+    public ResponseEntity<EquipamentoResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody EquipamentoRequestDTO dto) {
+        // status/obsoleto nao fazem parte do request (geridos pelo fluxo de negocio via
+        // EquipamentoService.alterarStatus) - preserva os valores atuais para nao serem
+        // sobrescritos pelo default da entidade recem-montada pelo mapper.
+        Equipamento existente = equipamentoService.buscarPorId(id);
+        Modelo modelo = modeloService.buscarPorId(dto.modeloId());
+        Parceiro parceiro = parceiroService.buscarPorId(dto.parceiroId());
+
+        Equipamento equipamento = EquipamentoMapper.toEntity(dto, modelo, parceiro);
+        equipamento.setStatus(existente.getStatus());
+        equipamento.setObsoleto(existente.isObsoleto());
+
+        Equipamento atualizado = equipamentoService.atualizar(id, equipamento);
+        return ResponseEntity.ok(EquipamentoMapper.toResponseDTO(atualizado));
     }
 
     @Override

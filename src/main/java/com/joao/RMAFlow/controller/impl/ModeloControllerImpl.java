@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.joao.RMAFlow.controller.ModeloController;
+import com.joao.RMAFlow.dto.request.ModeloRequestDTO;
+import com.joao.RMAFlow.dto.response.ModeloResponseDTO;
+import com.joao.RMAFlow.mapper.ModeloMapper;
 import com.joao.RMAFlow.model.Modelo;
 import com.joao.RMAFlow.service.ModeloService;
 
@@ -34,26 +37,31 @@ public class ModeloControllerImpl implements ModeloController {
 
     @Override
     @GetMapping
-    public ResponseEntity<List<Modelo>> listar() {
-        return ResponseEntity.ok(modeloService.listarTodos());
+    public ResponseEntity<List<ModeloResponseDTO>> listar() {
+        List<ModeloResponseDTO> modelos = modeloService.listarTodos().stream()
+                .map(ModeloMapper::toResponseDTO)
+                .toList();
+        return ResponseEntity.ok(modelos);
     }
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<Modelo> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(modeloService.buscarPorId(id));
+    public ResponseEntity<ModeloResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(ModeloMapper.toResponseDTO(modeloService.buscarPorId(id)));
     }
 
     @Override
     @PostMapping
-    public ResponseEntity<Modelo> criar(@Valid @RequestBody Modelo modelo) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(modeloService.salvar(modelo));
+    public ResponseEntity<ModeloResponseDTO> criar(@Valid @RequestBody ModeloRequestDTO dto) {
+        Modelo salvo = modeloService.salvar(ModeloMapper.toEntity(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ModeloMapper.toResponseDTO(salvo));
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<Modelo> atualizar(@PathVariable Long id, @Valid @RequestBody Modelo modelo) {
-        return ResponseEntity.ok(modeloService.atualizar(id, modelo));
+    public ResponseEntity<ModeloResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody ModeloRequestDTO dto) {
+        Modelo atualizado = modeloService.atualizar(id, ModeloMapper.toEntity(dto));
+        return ResponseEntity.ok(ModeloMapper.toResponseDTO(atualizado));
     }
 
     @Override

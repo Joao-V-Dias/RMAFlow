@@ -14,8 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.joao.RMAFlow.controller.TesteController;
+import com.joao.RMAFlow.dto.request.TesteRequestDTO;
+import com.joao.RMAFlow.dto.response.TesteResponseDTO;
+import com.joao.RMAFlow.mapper.TesteMapper;
+import com.joao.RMAFlow.model.Equipamento;
 import com.joao.RMAFlow.model.Teste;
+import com.joao.RMAFlow.model.Usuario;
+import com.joao.RMAFlow.service.EquipamentoService;
 import com.joao.RMAFlow.service.TesteService;
+import com.joao.RMAFlow.service.UsuarioService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,29 +37,40 @@ import lombok.RequiredArgsConstructor;
 public class TesteControllerImpl implements TesteController {
 
     private final TesteService testeService;
+    private final EquipamentoService equipamentoService;
+    private final UsuarioService usuarioService;
 
     @Override
     @GetMapping
-    public ResponseEntity<List<Teste>> listar() {
-        return ResponseEntity.ok(testeService.listarTodos());
+    public ResponseEntity<List<TesteResponseDTO>> listar() {
+        List<TesteResponseDTO> testes = testeService.listarTodos().stream()
+                .map(TesteMapper::toResponseDTO)
+                .toList();
+        return ResponseEntity.ok(testes);
     }
 
     @Override
     @GetMapping("/{id}")
-    public ResponseEntity<Teste> buscarPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(testeService.buscarPorId(id));
+    public ResponseEntity<TesteResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(TesteMapper.toResponseDTO(testeService.buscarPorId(id)));
     }
 
     @Override
     @PostMapping
-    public ResponseEntity<Teste> criar(@Valid @RequestBody Teste teste) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(testeService.salvar(teste));
+    public ResponseEntity<TesteResponseDTO> criar(@Valid @RequestBody TesteRequestDTO dto) {
+        Equipamento equipamento = equipamentoService.buscarPorId(dto.equipamentoId());
+        Usuario responsavel = usuarioService.buscarPorId(dto.responsavelId());
+        Teste salvo = testeService.salvar(TesteMapper.toEntity(dto, equipamento, responsavel));
+        return ResponseEntity.status(HttpStatus.CREATED).body(TesteMapper.toResponseDTO(salvo));
     }
 
     @Override
     @PutMapping("/{id}")
-    public ResponseEntity<Teste> atualizar(@PathVariable Long id, @Valid @RequestBody Teste teste) {
-        return ResponseEntity.ok(testeService.atualizar(id, teste));
+    public ResponseEntity<TesteResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody TesteRequestDTO dto) {
+        Equipamento equipamento = equipamentoService.buscarPorId(dto.equipamentoId());
+        Usuario responsavel = usuarioService.buscarPorId(dto.responsavelId());
+        Teste atualizado = testeService.atualizar(id, TesteMapper.toEntity(dto, equipamento, responsavel));
+        return ResponseEntity.ok(TesteMapper.toResponseDTO(atualizado));
     }
 
     @Override
