@@ -1,5 +1,6 @@
 package com.joao.RMAFlow.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,4 +14,8 @@ public interface EquipamentoRepository extends JpaRepository<Equipamento, Long> 
     List<Equipamento> findByStatus(StatusEquipamento status);
 
     Optional<Equipamento> findByNumeroSerie(String numeroSerie);
+
+    List<Equipamento> findByDataEntradaBetween(LocalDateTime inicio, LocalDateTime fim);
+
+    List<Equipamento> findByStatusInAndNotaFiscalIsNull(List<StatusEquipamento> status);
 }
