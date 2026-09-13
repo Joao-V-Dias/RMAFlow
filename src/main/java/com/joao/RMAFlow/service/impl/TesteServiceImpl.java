@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.joao.RMAFlow.model.Teste;
+import com.joao.RMAFlow.model.enums.StatusEquipamento;
 import com.joao.RMAFlow.repository.TesteRepository;
+import com.joao.RMAFlow.service.EquipamentoService;
 import com.joao.RMAFlow.service.TesteService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -16,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class TesteServiceImpl implements TesteService {
 
     private final TesteRepository testeRepository;
+    private final EquipamentoService equipamentoService;
 
     @Override
     public Teste salvar(Teste teste) {
@@ -47,5 +50,24 @@ public class TesteServiceImpl implements TesteService {
     @Override
     public void excluir(Long id) {
         testeRepository.deleteById(id);
+    }
+
+    @Override
+    public Teste registrarResultado(Teste teste, Boolean manutencaoViavel) {
+        Teste salvo = testeRepository.save(teste);
+
+        StatusEquipamento novoStatus = switch (salvo.getResultado()) {
+            case APROVADO -> StatusEquipamento.DISPONIVEL;
+            case REPROVADO -> Boolean.TRUE.equals(manutencaoViavel)
+                    ? StatusEquipamento.EM_MANUTENCAO
+                    : StatusEquipamento.SUCATA;
+        };
+
+        equipamentoService.alterarStatus(
+                salvo.getEquipamento().getId(),
+                novoStatus,
+                salvo.getResponsavel().getId());
+
+        return salvo;
     }
 }

@@ -1,5 +1,6 @@
 package com.joao.RMAFlow.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -84,6 +85,7 @@ public class EquipamentoServiceImpl implements EquipamentoService {
                 .usuario(usuario)
                 .statusAnterior(statusAnterior)
                 .statusNovo(novoStatus)
+                .dataAlteracao(LocalDateTime.now())
                 .build();
         historicoStatusRepository.save(historico);
 
